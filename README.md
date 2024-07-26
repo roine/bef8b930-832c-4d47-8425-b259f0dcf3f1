@@ -36,7 +36,10 @@ To keep it under 4 hours no tests have been added.
 - display the thumbnails while the images load to avoid layout shifts
 - when changing page, keep the current view until the next is loaded
 - allow for current page initialisation using URL params (eg: ?page=99)
-- more accurate API typing
 - caching? Define a caching policy
-- prefetching
-- mobile network optimisations
+- prefetching, prefetch the next page content, so the user doesn't have to wait
+- mobile network optimisations, load lighter images for mobile
+- more advanced types (eg: get the right type to represent API response data that was filtered using 'fields' filter)
+- make the code DRYer,
+- add prettier tailwindcss plugin, so that the classes are sorted in a consistent way and any inconsistency is picked up
+- maybe use HOC to abstract asynchronous data state UI

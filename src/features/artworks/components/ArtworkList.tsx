@@ -1,8 +1,9 @@
 import * as RemoteData from "../../../utils/remoteData.ts";
-import { getImageSRC } from "../artworksAPI.ts";
+import { ArtworkResponse, getImageSRC } from "../artworksAPI.ts";
 import clsx from "clsx";
 import { useArtworks } from "../artworksHooks.ts";
 import Loading from "../../../components/Loading.tsx";
+import { useNavigate } from "react-router-dom";
 
 const fields = [
   "id",
@@ -12,10 +13,11 @@ const fields = [
   "description",
   "credit_line",
   "artist_title",
-];
+] as const satisfies (keyof ArtworkResponse)[];
 
 const ArtworkList = () => {
   const { artworks, refetch } = useArtworks({ fields });
+  const navigate = useNavigate();
 
   if (RemoteData.isInitial(artworks)) {
     return (
@@ -62,6 +64,10 @@ const ArtworkList = () => {
       refetch({ page: artworks.value.pagination.current_page + 1 });
     };
 
+    const navigateToDetailView = (id: ArtworkResponse["id"]) => {
+      navigate(`/artworks/${id}`);
+    };
+
     return (
       <div className="flex flex-col gap-8">
         <div className="flex gap-4 flex-col">
@@ -98,6 +104,12 @@ const ArtworkList = () => {
                     className="py-6"
                     dangerouslySetInnerHTML={{ __html: artwork.description }}
                   />
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => navigateToDetailView(artwork.id)}
+                  >
+                    Read more
+                  </button>
                 </div>
               </div>
             </div>

@@ -1,22 +1,18 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import * as RemoteData from "../../utils/remoteData";
-import { Config, fetchArtworksData, Pagination } from "./artworksAPI";
+import {
+  ArtworkDetailsQueryConfig,
+  ArtworksQueryConfig,
+  fetchArtworkDetailsData,
+  FetchArtworkDetailsDataResponseBody,
+  fetchArtworksData,
+  FetchArtworksDataResponseBody,
+} from "./artworksAPI";
 import { RootState } from "../../store.ts";
 
-type Artwork = {
-  id: number;
-  api_link: string;
-  title: string;
-  thumbnail: { alt_text: string } | null;
-  image_id: string | null;
-  description: string;
-  credit_line: string;
-  artist_title: string;
-};
-
 type State = {
-  list: RemoteData.Model<string, { pagination: Pagination; data: Artwork[] }>;
-  single: RemoteData.Model<string, Artwork>;
+  list: RemoteData.Model<string, FetchArtworksDataResponseBody>;
+  single: RemoteData.Model<string, FetchArtworkDetailsDataResponseBody>;
 };
 
 const initialState: State = {
@@ -26,8 +22,17 @@ const initialState: State = {
 
 export const fetchArtworks = createAsyncThunk(
   "artworks/fetchArtworks",
-  async (arg?: Config) => {
-    return await fetchArtworksData(arg);
+  async (arg: ArtworksQueryConfig) => {
+    return fetchArtworksData(arg);
+  },
+);
+
+export const fetchArtworkDetails = createAsyncThunk(
+  "artworks/fetchArtworkDetails",
+  async (arg: { id: string } & ArtworkDetailsQueryConfig) => {
+    const { id, ...rest } = arg;
+
+    return fetchArtworkDetailsData(id, rest);
   },
 );
 
@@ -48,9 +53,23 @@ const artworksSlice = createSlice({
           action.error.message ?? "Unknown error",
         );
       });
+
+    builder
+      .addCase(fetchArtworkDetails.pending, (state) => {
+        state.single = RemoteData.pending;
+      })
+      .addCase(fetchArtworkDetails.fulfilled, (state, action) => {
+        state.single = RemoteData.success(action.payload);
+      })
+      .addCase(fetchArtworkDetails.rejected, (state, action) => {
+        state.single = RemoteData.failure(
+          action.error.message ?? "Unknown error",
+        );
+      });
   },
 });
 
 export const selectArtworks = (state: RootState) => state.artworks.list;
+export const selectArtworkDetails = (state: RootState) => state.artworks.single;
 
 export default artworksSlice.reducer;

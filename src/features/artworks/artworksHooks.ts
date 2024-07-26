@@ -1,10 +1,18 @@
 import { useEffect } from "react";
-import { fetchArtworks, selectArtworks } from "./artworksSlice.ts";
+import {
+  fetchArtworkDetails,
+  fetchArtworks,
+  selectArtworkDetails,
+  selectArtworks,
+} from "./artworksSlice.ts";
 import { AppDispatch } from "../../store.ts";
 import { useDispatch, useSelector } from "react-redux";
-import { Config } from "./artworksAPI.ts";
+import {
+  ArtworkDetailsQueryConfig,
+  ArtworksQueryConfig,
+} from "./artworksAPI.ts";
 
-export const useArtworks = (config: undefined | Config) => {
+export const useArtworks = (config: ArtworksQueryConfig) => {
   const dispatch: AppDispatch = useDispatch();
 
   const artworks = useSelector(selectArtworks);
@@ -13,9 +21,36 @@ export const useArtworks = (config: undefined | Config) => {
     fetch(config);
   }, []);
 
-  const fetch = (newConfig: Config | undefined = {}) => {
+  const fetch = (newConfig: Partial<ArtworksQueryConfig> | undefined = {}) => {
     dispatch(fetchArtworks({ ...config, ...newConfig }));
   };
 
   return { artworks, refetch: fetch };
+};
+
+export const useArtworkDetails = (
+  artworkID: string,
+  config: ArtworkDetailsQueryConfig,
+) => {
+  const dispatch: AppDispatch = useDispatch();
+
+  const artwork = useSelector(selectArtworkDetails);
+
+  useEffect(() => {
+    fetch(config);
+  }, []);
+
+  const fetch = (
+    newConfig: Partial<ArtworkDetailsQueryConfig> | undefined = {},
+  ) => {
+    dispatch(
+      fetchArtworkDetails({
+        id: artworkID,
+        ...config,
+        ...newConfig,
+      }),
+    );
+  };
+
+  return { artwork, refetch: fetch };
 };

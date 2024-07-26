@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import ArtworkList from "./features/artworks/components/ArtworkList.tsx";
 import AppLayout from "./AppLayout.tsx";
 import { ErrorElement } from "./ErrorElement.tsx";
+import { ArtworkDetail } from "./features/artworks/components/ArtworkDetail.tsx";
 
 const router = createBrowserRouter(
   [
@@ -13,6 +14,10 @@ const router = createBrowserRouter(
         {
           index: true,
           element: <ArtworkList />,
+        },
+        {
+          path: "/artworks/:artworkID",
+          element: <ArtworkDetail />,
         },
       ],
     },
